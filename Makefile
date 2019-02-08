@@ -1,8 +1,8 @@
 test_1:
-	py.test tests.py --tb=short -v -k test_parse_int
+	py.test tests.py --tb=short -vv -k test_parse_int
 
 test_2:
-	py.test tests.py --tb=short -v -k test_create_new_task_invalid_due_date
+	py.test tests.py --tb=short -vv -k test_create_new_task_invalid_due_date
 
 test_3:
 	py.test tests.py --tb=short -v -k test_list_invalid_status_task

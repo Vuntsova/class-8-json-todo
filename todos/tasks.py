@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from .exceptions import (
-    InvalidTaskStatus, TaskAlreadyDoneException, TaskDoesntExistException)
+    InvalidTaskStatus, TaskAlreadyDoneException, TaskDoesntExistException,InvalidTaskDueDateException)
 from .utils import parse_date, parse_int
 
 
@@ -21,9 +21,14 @@ def create_task(tasks, name, description=None, due_on=None):
     }
     tasks.append(task)
 
+    
+    
+    
 
 def list_tasks(tasks, status='all'):
     task_list = []
+    if status not in ['all','pending','done']:
+        raise InvalidTaskStatus()
     for idx, task in enumerate(tasks, 1):
         if task['due_on'] is not None:
             due_on = task['due_on'].strftime('%Y-%m-%d %H:%M:%S')
@@ -33,18 +38,48 @@ def list_tasks(tasks, status='all'):
         t = (idx, task['task'], due_on, task['status'])
         if status == 'all' or task['status'] == status:
             task_list.append(t)
+        
+         
 
     return task_list
 
 
+
+
+
+
 def complete_task(tasks, name):
     new_tasks = []
-
-    for task in tasks:
+    flag = False
+    
+    for order,task in enumerate(tasks,1):
         if name == task['task']:
+            
+            if task['status'] == "done":
+                raise TaskAlreadyDoneException()
+                
+            flag = True
             task = task.copy()
             task['status'] = 'done'
+        
+        else:
+            try:
+                if int(name) == order:
+                    if task['status'] == "done":
+                        raise TaskAlreadyDoneException()
+
+                    flag = True
+                    task = task.copy()
+                    task['status'] = 'done'
+                    
+            except ValueError:
+                pass
+            
+            
         new_tasks.append(task)
+        
+    if flag == False:
+        raise TaskDoesntExistException()
 
     return new_tasks
 
